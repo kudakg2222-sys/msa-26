@@ -1,4 +1,4 @@
-"use client"
+﻿"use client"
 
 import {
   useEffect,
@@ -165,69 +165,54 @@ function formatMoney(value: number) {
 function getNextNfpEvent() {
   const now = new Date()
 
-  const year = now.getUTCFullYear()
-  const month = now.getUTCMonth()
+  // Simulated NFP event every day at 13:30 Zimbabwe time.
+  const getHarareParts = (date: Date) => {
+    const parts = new Intl.DateTimeFormat("en-US", {
+      timeZone: "Africa/Harare",
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+      hour12: false,
+    }).formatToParts(date)
 
-  let firstFriday = 1
+    const values: Record<string, number> = {}
 
-  while (
-    new Date(
-      Date.UTC(
-        year,
-        month,
-        firstFriday
-      )
-    ).getUTCDay() !== 5
-  ) {
-    firstFriday += 1
+    for (const part of parts) {
+      if (part.type !== "literal") {
+        values[part.type] = Number(part.value)
+      }
+    }
+
+    return values
   }
 
+  const current = getHarareParts(now)
+
+  // Zimbabwe is UTC+2.
+  // 13:30 Zimbabwe time = 11:30 UTC.
   let event = new Date(
     Date.UTC(
-      year,
-      month,
-      firstFriday,
-      13,
+      current.year,
+      current.month - 1,
+      current.day,
+      11,
       30,
       0
     )
   )
 
-  if (
-    event.getTime() <=
-    now.getTime()
-  ) {
-    const nextMonth = month + 1
-    const nextYear =
-      nextMonth > 11
-        ? year + 1
-        : year
-
-    const actualMonth =
-      nextMonth > 11
-        ? 0
-        : nextMonth
-
-    firstFriday = 1
-
-    while (
-      new Date(
-        Date.UTC(
-          nextYear,
-          actualMonth,
-          firstFriday
-        )
-      ).getUTCDay() !== 5
-    ) {
-      firstFriday += 1
-    }
-
+  // If today's 13:30 event has already passed,
+  // use tomorrow's 13:30 event.
+  if (event.getTime() <= now.getTime()) {
     event = new Date(
       Date.UTC(
-        nextYear,
-        actualMonth,
-        firstFriday,
-        13,
+        current.year,
+        current.month - 1,
+        current.day + 1,
+        11,
         30,
         0
       )
@@ -236,7 +221,6 @@ function getNextNfpEvent() {
 
   return event
 }
-
 function getNfpStatus(now: number) {
   const event = getNextNfpEvent()
 
@@ -2715,7 +2699,7 @@ export default function DemoPage() {
             "bg-emerald-500/10",
           title:
             "text-emerald-400",
-          icon: "✓",
+          icon: "âœ“",
         }
 
       case "warning":
@@ -2737,7 +2721,7 @@ export default function DemoPage() {
             "bg-red-500/10",
           title:
             "text-red-400",
-          icon: "×",
+          icon: "Ã—",
         }
 
       default:
@@ -2786,7 +2770,7 @@ export default function DemoPage() {
               href="/"
               className="text-sm text-slate-400 transition hover:text-white"
             >
-              ← Back to MSA 26
+              â† Back to MSA 26
             </Link>
 
             <div className="mt-8">
@@ -2870,7 +2854,7 @@ export default function DemoPage() {
                         }
                         {brokerName ===
                         "KG Brokers"
-                          ? " — Recommended"
+                          ? " â€” Recommended"
                           : ""}
                       </option>
                     )
@@ -3147,7 +3131,7 @@ export default function DemoPage() {
         <div className="mx-auto flex min-h-screen max-w-4xl items-center justify-center px-6 py-10">
           <div className="w-full rounded-3xl border border-red-500/30 bg-slate-900 p-10 text-center">
             <div className="text-5xl">
-              ⚠
+              âš 
             </div>
 
             <h1 className="mt-5 text-4xl font-black text-red-400">
@@ -3233,7 +3217,7 @@ export default function DemoPage() {
                 href="/"
                 className="text-sm text-slate-500 hover:text-white"
               >
-                ← MSA 26
+                â† MSA 26
               </Link>
 
               <span className="text-slate-700">
@@ -3469,7 +3453,7 @@ export default function DemoPage() {
                   addNotification(
                     "info",
                     "Market Changed",
-                    `Viewing ${nextMarket.symbol} — ${nextMarket.name}.`
+                    `Viewing ${nextMarket.symbol} â€” ${nextMarket.name}.`
                   )
                 }
               }}
@@ -3488,7 +3472,7 @@ export default function DemoPage() {
                     {
                       market.symbol
                     }{" "}
-                    —{" "}
+                    â€”{" "}
                     {
                       market.name
                     }
@@ -3621,13 +3605,13 @@ export default function DemoPage() {
                       timeframe
                   )?.label
                 }{" "}
-                candles • Live simulated
+                candles â€¢ Live simulated
                 market
               </p>
             </div>
 
             <div className="rounded-lg bg-slate-950 px-3 py-2 text-xs text-emerald-400">
-              ● MARKET LIVE
+              â— MARKET LIVE
             </div>
           </div>
 
@@ -4100,7 +4084,7 @@ export default function DemoPage() {
                                   position.stopLoss,
                                   position.category
                                 )
-                              : "—"}
+                              : "â€”"}
                           </td>
 
                           <td className="px-5 py-4">
@@ -4110,7 +4094,7 @@ export default function DemoPage() {
                                   position.takeProfit,
                                   position.category
                                 )
-                              : "—"}
+                              : "â€”"}
                           </td>
 
                           <td
